@@ -1,0 +1,15 @@
+[Used dataset statistics]
+
+[Phosphorylated] (Whole = Screened + Residual)
+S- 21939 5056 16883
+T- 3047 1853 1194
+Y- 2058 1389 669
+SP 10348 3985 6363
+TP 2687 1630 1057
+
+[Non-phosphorylated] (Whole = (Dropped out) + Screened + Residual)
+S- 857401 642972 23400 191029
+T- 564677 149849 17698 397130
+Y- 301296 49881 16786 234629
+SP 57513 39263 10297 7953 
+TP 39114 14377 10050 14687
