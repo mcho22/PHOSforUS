@@ -190,7 +190,7 @@ for i_4 in range(18):
         clf_part.fit(t_varray[:, (i_4*21):((i_4+1)*21)], t_stats, sample_weight = t_weight)
         t_tlist.append(numpy.ndarray.tolist(clf_part.predict_log_proba(t_varray[:, (i_4*21):((i_4+1)*21)])[:, 1]))
         clf_filename = "preset_params/class_"+sys.argv[1]+"/param_"+sys.argv[1]+"_0"+str(i_4)+".txt"
-        pickle.dump(clf_part, open(clf_filename, 'w'))
+        pickle.dump(clf_part, open(clf_filename, 'wb'))
         print "#### Sub-classifier #0" + str(i_4)+" fitting completed //", str(datetime.datetime.now())[8:19]
 
     elif i_4 >= 10:
@@ -198,7 +198,7 @@ for i_4 in range(18):
         clf_part.fit(t_varray[:, (i_4*21):((i_4+1)*21)], t_stats, sample_weight = t_weight)
         t_tlist.append(numpy.ndarray.tolist(clf_part.predict_log_proba(t_varray[:, (i_4*21):((i_4+1)*21)])[:, 1]))
         clf_filename = "preset_params/class_"+sys.argv[1]+"/param_"+sys.argv[1]+"_"+str(i_4)+".txt"
-        pickle.dump(clf_part, open(clf_filename, 'w'))
+        pickle.dump(clf_part, open(clf_filename, 'wb'))
         print "#### Sub-classifier #" + str(i_4)+" fitting completed //", str(datetime.datetime.now())[8:19]
 
 t_tarray = numpy.asarray(numpy.transpose(t_tlist))
@@ -207,7 +207,7 @@ clf_total = GradientBoostingClassifier()
 clf_total.fit(t_tarray, t_stats, sample_weight = t_weight)
 
 clf_filename = "preset_params/class_"+sys.argv[1]+"/metaparam_"+sys.argv[1]+".txt"
-pickle.dump(clf_total, open(clf_filename, 'w'))
+pickle.dump(clf_total, open(clf_filename, 'wb'))
 print "#### Metapredictor fitting completed //", str(datetime.datetime.now())[8:19]
 
 #### Pickling test
