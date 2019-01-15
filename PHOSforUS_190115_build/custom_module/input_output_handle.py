@@ -83,13 +83,18 @@ def input_escape():
     return escape_label, numpy.transpose(escape_raw)
 
 def preset_clf_import():
+	pci_param_order = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17"]
 	pci_list = []
 	for pci_1 in range(5):
 		pci_sub = []
-		pci_fnames = os.listdir("preset_params/class_"+str(pci_1))
-		for pci_2 in range(len(pci_fnames)):
-			pci_clf = pickle.load(open("preset_params/class_"+str(pci_1)+"/"+pci_fnames[pci_2]))
-			pci_sub.append(pci_clf)
+		#pci_fnames = os.listdir("preset_params/class_"+str(pci_1))
+        for pci_2 in range(19):
+            if pci_2 == 0:
+                pci_clf = pickle.load(open("preset_params/class_"+str(pci_1)+"/metaparam_"+str(pci_1)+".txt"))
+                pci_sub.append(pci_clf)
+            else:
+                pci_clf = pickle.load(open("preset_params/class_"+str(pci_1)+"/param_"+str(pci_1)+"_"+pci_param_order[pci_2-1]+".txt"))
+                pci_sub.append(pci_clf)
 		pci_list.append(pci_sub)
 	return pci_list
 
