@@ -127,12 +127,12 @@ n_list = []
 
 with open("training_dataset/phos_screened_"+sys.argv[1]+".txt") as p_file:
     for line in p_file:
-        sst = line.rstrip('\n').split('\t')[3]
+        sst = line.rstrip('\n').split('\t')[3][0:29]
         p_list.append(sst)
 
 with open("training_dataset/nonphos_screened_"+sys.argv[1]+".txt") as n_file:
     for line in n_file:
-        sst = line.rstrip('\n').split('\t')[3]
+        sst = line.rstrip('\n').split('\t')[3][0:29]
         n_list.append(sst)
 
 #### P-sample equalizer
@@ -149,7 +149,7 @@ with open("training_dataset/nonphos_screened_"+sys.argv[1]+".txt") as n_file:
 
 #print len(p_list), len(n_list), len(p_xsample)
 
-print len(p_list), len(n_list)
+print len(p_list), len(n_list), len(p_list[0]), len(n_list[0])
 weight_base = float(len(p_list) + len(n_list))
 
 #### Pickling body
@@ -203,7 +203,7 @@ for i_4 in range(18):
 
 t_tarray = numpy.asarray(numpy.transpose(t_tlist))
 
-clf_total = GradientBoostingClassifier()
+clf_total = GradientBoostingClassifier(n_estimators = 50)
 clf_total.fit(t_tarray, t_stats, sample_weight = t_weight)
 
 clf_filename = "preset_params/class_"+sys.argv[1]+"/metaparam_"+sys.argv[1]+".txt"

@@ -21,6 +21,7 @@ from custom_module import input_output_handle, sequence_calc, misc_functions
 #### Universal variables
 
 aa_list = ["A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y", "_"]
+non_proline = ["A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "Q", "R", "S", "T", "V", "W", "Y"]
 p_class = ["S-", "T-", "Y-", "SP", "TP"]
 
 weight_types = [1, 1, 1, 1, 1, 1, 0, 0, 0, 0]
@@ -42,22 +43,22 @@ n_vseq = []
 
 with open("training_dataset/screened_p/phos_screened_"+sys.argv[1]+".txt") as p_file:
     for line in p_file:
-        sst = line.rstrip('\n').split('\t')[3]
+        sst = line.rstrip('\n').split('\t')[3][0:29]
         p_tseq.append(sst)
 
 with open("training_dataset/screened_np/nonphos_screened_"+sys.argv[1]+".txt") as n_file:
     for line in n_file:
-        sst = line.rstrip('\n').split('\t')[3]
+        sst = line.rstrip('\n').split('\t')[3][0:29]
         n_tseq.append(sst)
 
 with open("testing_dataset/phos_residual_"+sys.argv[1]+".txt") as p_file:
     for line in p_file:
-        sst = line.rstrip('\n').split('\t')[3]
+        sst = line.rstrip('\n').split('\t')[3][0:29]
         p_vseq.append(sst)
 
 with open("testing_dataset/nonphos_residual_"+sys.argv[1]+".txt") as n_file:
     for line in n_file:
-        sst = line.rstrip('\n').split('\t')[3]
+        sst = line.rstrip('\n').split('\t')[3][0:29]
         n_vseq.append(sst)
 
 #### File import
@@ -84,6 +85,7 @@ for i_0 in range(iterat_cycle):
 		tar_files[0][1] += n_tsample[i_00]
 		tar_files[1][1] += p_vsample[i_00]
 		tar_files[1][1] += n_vsample[i_00]
+	#print len(tar_files[0][1]), len(tar_files[1][1])
 
 	for i_1 in range(len(tar_files)):
 		tar_code = sequence_calc.seq_codifier(tar_files[i_1][1])

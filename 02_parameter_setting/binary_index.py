@@ -6,6 +6,7 @@ import numpy
 import random
 import sys
 
+from sklearn import metrics
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import GaussianNB
@@ -127,12 +128,12 @@ n_list = []
 
 with open("training_dataset/phos_screened_"+sys.argv[1]+".txt") as p_file:
     for line in p_file:
-        sst = line.rstrip('\n').split('\t')[3]
+        sst = line.rstrip('\n').split('\t')[3][0:29]
         p_list.append(sst)
 
 with open("training_dataset/nonphos_screened_"+sys.argv[1]+".txt") as n_file:
     for line in n_file:
-        sst = line.rstrip('\n').split('\t')[3]
+        sst = line.rstrip('\n').split('\t')[3][0:29]
         n_list.append(sst)
 
 #### Main body
@@ -185,10 +186,11 @@ for i_1 in range(iterat_cycle):
 
     t_barray = numpy.asarray(t_blist)
 
+    tlem = tlen - 100
     clf_b = GradientBoostingClassifier()
     clf_b.fit(t_barray[:2*tlen, :], t_stats[:2*tlen])
-    b_trscore = clf_b.score(t_barray[:2*tlen, :], t_stats[:2*tlen])
-    b_tsscore = clf_b.score(t_barray[2*tlen:, :], t_stats[2*tlen:])
+    b_trscore = metrics.roc_auc_score(t_stats[:2*tlen], clf_b.predict_log_proba(t_barray[:2*tlen, :])[:, 1])
+    b_tsscore = metrics.roc_auc_score(t_stats[2*tlen:], clf_b.predict_log_proba(t_barray[2*tlen:, :])[:, 1])
 
     print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], "BINARY_FEATURE", b_trscore, b_tsscore, str(datetime.datetime.now())[8:19]
     score_sub_tr.append(b_trscore)
@@ -221,8 +223,8 @@ for i_1 in range(iterat_cycle):
     for i_7 in range(10):
         clf_v = GaussianNB()
         clf_v.fit(t_varray[:2*tlen, (i_7*21):((i_7+1)*21)], t_stats[:2*tlen])
-        v_trscore = clf_v.score(t_varray[:2*tlen, (i_7*21):((i_7+1)*21)], t_stats[:2*tlen])
-        v_tsscore = clf_v.score(t_varray[2*tlen:, (i_7*21):((i_7+1)*21)], t_stats[2*tlen:])
+        v_trscore = metrics.roc_auc_score(t_stats[:2*tlen], clf_v.predict_log_proba(t_varray[:2*tlen, (i_7*21):((i_7+1)*21)])[:, 1])
+        v_tsscore = metrics.roc_auc_score(t_stats[2*tlen:], clf_v.predict_log_proba(t_varray[2*tlen:, (i_7*21):((i_7+1)*21)])[:, 1])
         print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], ind_label[i_7], v_trscore, v_tsscore
         t_tlist.append(numpy.ndarray.tolist(clf_v.predict_log_proba(t_varray[:, (i_7*21):((i_7+1)*21)])[:, 1]))
         score_sub_tr.append(v_trscore)
@@ -231,44 +233,74 @@ for i_1 in range(iterat_cycle):
     for i_8 in range(8):
         clf_e = GaussianNB()
         clf_e.fit(t_earray[:2*tlen, (i_8*21):((i_8+1)*21)], t_stats[:2*tlen])
-        e_trscore = clf_e.score(t_earray[:2*tlen, (i_8*21):((i_8+1)*21)], t_stats[:2*tlen])
-        e_tsscore = clf_e.score(t_earray[2*tlen:, (i_8*21):((i_8+1)*21)], t_stats[2*tlen:])
+        e_trscore = metrics.roc_auc_score(t_stats[:2*tlen], clf_e.predict_log_proba(t_earray[:2*tlen, (i_8*21):((i_8+1)*21)])[:, 1])
+        e_tsscore = metrics.roc_auc_score(t_stats[2*tlen:], clf_e.predict_log_proba(t_earray[2*tlen:, (i_8*21):((i_8+1)*21)])[:, 1])
         print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], es_prelabel[i_8], e_trscore, e_tsscore
         t_tlist.append(numpy.ndarray.tolist(clf_e.predict_log_proba(t_earray[:, (i_8*21):((i_8+1)*21)])[:, 1]))
         score_sub_tr.append(e_trscore)
         score_sub_ts.append(e_tsscore)
     
     t_tarray = numpy.asarray(numpy.transpose(t_tlist))
+    
+    ####
+
+    clf_a = GradientBoostingClassifier()
+    clf_a.fit(t_varray[:2*tlen, 0:126], t_stats[:2*tlen])
+    a_trscore = metrics.roc_auc_score(t_stats[:2*tlen], clf_a.predict_log_proba(t_varray[:2*tlen, 0:126])[:, 1])
+    a_tsscore = metrics.roc_auc_score(t_stats[2*tlen:], clf_a.predict_log_proba(t_varray[2*tlen:, 0:126])[:, 1])
+    print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], "HOR-GBoost", a_trscore, a_tsscore, str(datetime.datetime.now())[8:19]
+    score_sub_tr.append(a_trscore)
+    score_sub_ts.append(a_tsscore)
+
+    clf_b = GradientBoostingClassifier()
+    clf_b.fit(t_varray[:2*tlen, 126:210], t_stats[:2*tlen])
+    b_trscore = metrics.roc_auc_score(t_stats[:2*tlen], clf_b.predict_log_proba(t_varray[:2*tlen, 126:210])[:, 1])
+    b_tsscore = metrics.roc_auc_score(t_stats[2*tlen:], clf_b.predict_log_proba(t_varray[2*tlen:, 126:210])[:, 1])
+    print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], "VER-GBoost", b_trscore, b_tsscore, str(datetime.datetime.now())[8:19]
+    score_sub_tr.append(b_trscore)
+    score_sub_ts.append(b_tsscore)
+
+    clf_c = GradientBoostingClassifier()
+    clf_c.fit(t_earray[:2*tlen, :], t_stats[:2*tlen])
+    c_trscore = metrics.roc_auc_score(t_stats[:2*tlen], clf_c.predict_log_proba(t_earray[:2*tlen, :])[:, 1])
+    c_tsscore = metrics.roc_auc_score(t_stats[2*tlen:], clf_c.predict_log_proba(t_earray[2*tlen:, :])[:, 1])
+    print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], "ESC-GBoost", c_trscore, c_tsscore, str(datetime.datetime.now())[8:19]
+    score_sub_tr.append(c_trscore)
+    score_sub_ts.append(c_tsscore)
+    
+    ####
 
     clf_x = GradientBoostingClassifier()
     clf_x.fit(t_tarray[:2*tlen, 0:6], t_stats[:2*tlen])
-    x_trscore = clf_x.score(t_tarray[:2*tlen, 0:6], t_stats[:2*tlen])
-    x_tsscore = clf_x.score(t_tarray[2*tlen:, 0:6], t_stats[2*tlen:])
-    print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], "HORIZONTAL", x_trscore, x_tsscore, str(datetime.datetime.now())[8:19]
+    x_trscore = metrics.roc_auc_score(t_stats[:2*tlen], clf_x.predict_log_proba(t_tarray[:2*tlen, 0:6])[:, 1])
+    x_tsscore = metrics.roc_auc_score(t_stats[2*tlem:], clf_x.predict_log_proba(t_tarray[2*tlem:, 0:6])[:, 1])
+    print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], "HOR-NESTED", x_trscore, x_tsscore, str(datetime.datetime.now())[8:19]
     score_sub_tr.append(x_trscore)
     score_sub_ts.append(x_tsscore)
 
     clf_y = GradientBoostingClassifier()
     clf_y.fit(t_tarray[:2*tlen, 6:10], t_stats[:2*tlen])
-    y_trscore = clf_y.score(t_tarray[:2*tlen, 6:10], t_stats[:2*tlen])
-    y_tsscore = clf_y.score(t_tarray[2*tlen:, 6:10], t_stats[2*tlen:])
-    print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], "VERTICAL", y_trscore, y_tsscore, str(datetime.datetime.now())[8:19]
+    y_trscore = metrics.roc_auc_score(t_stats[:2*tlen], clf_y.predict_log_proba(t_tarray[:2*tlen, 6:10])[:, 1])
+    y_tsscore = metrics.roc_auc_score(t_stats[2*tlem:], clf_y.predict_log_proba(t_tarray[2*tlem:, 6:10])[:, 1])
+    print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], "VER-NESTED", y_trscore, y_tsscore, str(datetime.datetime.now())[8:19]
     score_sub_tr.append(y_trscore)
     score_sub_ts.append(y_tsscore)
 
     clf_z = GradientBoostingClassifier()
     clf_z.fit(t_tarray[:2*tlen, 10:18], t_stats[:2*tlen])
-    z_trscore = clf_z.score(t_tarray[:2*tlen, 10:18], t_stats[:2*tlen])
-    z_tsscore = clf_z.score(t_tarray[2*tlen:, 10:18], t_stats[2*tlen:])
-    print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], "ESCAPE_ONLY", z_trscore, z_tsscore, str(datetime.datetime.now())[8:19]
+    z_trscore = metrics.roc_auc_score(t_stats[:2*tlen], clf_z.predict_log_proba(t_tarray[:2*tlen, 10:18])[:, 1])
+    z_tsscore = metrics.roc_auc_score(t_stats[2*tlem:], clf_z.predict_log_proba(t_tarray[2*tlem:, 10:18])[:, 1])
+    print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], "ESC-NESTED", z_trscore, z_tsscore, str(datetime.datetime.now())[8:19]
     score_sub_tr.append(z_trscore)
     score_sub_ts.append(z_tsscore)
+    
+    ####
 
-    clf_t = GradientBoostingClassifier()
+    clf_t = GradientBoostingClassifier(n_estimators = 50)
     clf_t.fit(t_tarray[:2*tlen, :], t_stats[:2*tlen])
-    t_trscore = clf_t.score(t_tarray[:2*tlen, :], t_stats[:2*tlen])
-    t_tsscore = clf_t.score(t_tarray[2*tlen:, :], t_stats[2*tlen:])
-    print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], "WHOLE_WHOLE", t_trscore, t_tsscore, str(datetime.datetime.now())[8:19]
+    t_trscore = metrics.roc_auc_score(t_stats[:2*tlen], clf_t.predict_log_proba(t_tarray[:2*tlen, :])[:, 1])
+    t_tsscore = metrics.roc_auc_score(t_stats[2*tlem:], clf_t.predict_log_proba(t_tarray[2*tlem:, :])[:, 1])
+    print "#### Cycle " + str(i_1+1) + ":", p_class[int(sys.argv[1])], "COMPOSITE", t_trscore, t_tsscore, str(datetime.datetime.now())[8:19]
     score_sub_tr.append(t_trscore)
     score_sub_ts.append(t_tsscore)
 
@@ -277,11 +309,18 @@ for i_1 in range(iterat_cycle):
 
 output_label = ["BINARY_FEATURE", ind_label[0], ind_label[1], ind_label[2], ind_label[3], ind_label[4], ind_label[5], 
 ind_label[6], ind_label[7], ind_label[8], ind_label[9], es_prelabel[0], es_prelabel[1], 
-es_prelabel[2], es_prelabel[3], es_prelabel[4], es_prelabel[5], es_prelabel[6], es_prelabel[7], "HORIZONTAL", "VERTICAL", "ESCAPE_ONLY", "WHOLE_WHOLE"]
+es_prelabel[2], es_prelabel[3], es_prelabel[4], es_prelabel[5], es_prelabel[6], es_prelabel[7], "HOR-GBoost", "VER-GBoost", "ESC-GBoost", "HOR-NESTED", "VER-NESTED", "ESC-NESTED", "COMPOSITE"]
 
 score_train_array = numpy.asarray(score_compile[0])
 score_test_array = numpy.asarray(score_compile[1])
 
-for i_9 in range(len(output_label)):
-    print p_class[int(sys.argv[1])], output_label[i_9], numpy.mean(score_train_array[:, i_9]), numpy.mean(score_test_array[:, i_9])
+out_file = open("index_analysis_result_"+sys.argv[1]+".txt", 'w')
 
+for i_9 in range(len(output_label)):
+    if i_9 == 0:
+        print p_class[int(sys.argv[1])], output_label[i_9], "AUROC_Training", "AUROC_Testing", "SD_Training", "SD_Testing"
+        out_file.write(p_class[int(sys.argv[1])] + '\t' + output_label[i_9] + '\t' + "AUROC_Training" + '\t' + "AUROC_Testing" + '\t' + "SD_Training" + '\t' + "SD_Testing" + '\n')
+    print p_class[int(sys.argv[1])], output_label[i_9], numpy.mean(score_train_array[:, i_9]), numpy.mean(score_test_array[:, i_9]), numpy.std(score_train_array[:, i_9]), numpy.std(score_test_array[:, i_9])
+    out_file.write(p_class[int(sys.argv[1])] + '\t' + output_label[i_9] + '\t' + str(numpy.mean(score_train_array[:, i_9])) + '\t' + str(numpy.mean(score_test_array[:, i_9])) + '\t' + str(numpy.std(score_train_array[:, i_9])) + '\t' + str(numpy.std(score_test_array[:, i_9])) + '\n')
+
+out_file.close()
