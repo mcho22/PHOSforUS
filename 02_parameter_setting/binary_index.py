@@ -11,7 +11,7 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import GaussianNB
 
-#### Universal variables / values 
+#### Universal variables / values
 
 iterat_cycle = 100
 

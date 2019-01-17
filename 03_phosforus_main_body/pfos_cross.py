@@ -14,7 +14,7 @@ from sklearn import metrics
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.naive_bayes import GaussianNB
 
-#### Custom module import 
+#### Custom module import
 
 from custom_module import input_output_handle, sequence_calc, misc_functions
 
