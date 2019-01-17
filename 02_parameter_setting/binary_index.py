@@ -101,7 +101,7 @@ def escape_scorer(es_code, es_indices, es_sel1, es_sel2):
             es_vsel.append(es_vlist[((es_sel2[0][es_6])*es_slen)+es_7] - es_vlist[((es_sel2[1][es_6])*es_slen)+es_7])
     return es_vsel
 
-#### Index file import
+#### Index file import 
 
 ind_label = []
 ind_list = []

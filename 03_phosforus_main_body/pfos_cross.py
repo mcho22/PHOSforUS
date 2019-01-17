@@ -122,7 +122,7 @@ for i_0 in range(iterat_cycle):
 tv_carray = numpy.asarray(tv_compile)
 print "Used sequence:", p_class[int(sys.argv[1])]
 print "Calculation result:", numpy.mean(tv_carray[:, int(sys.argv[1])])
-print "Applied parameters // S-      T-      Y-      SP      TP"
+print "Applied parameters // S-    T-    Y-    SP    TP"
 print numpy.mean(tv_carray[:, 0]), numpy.mean(tv_carray[:, 1]), numpy.mean(tv_carray[:, 2]), numpy.mean(tv_carray[:, 3]), numpy.mean(tv_carray[:, 4])
 
 ####	

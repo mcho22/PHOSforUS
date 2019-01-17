@@ -3,7 +3,7 @@
 #### Cross-usage of binary feature-based (PSSM-based) predictor 
 #### Calculates differences between subclasses divided by phosphorylation sites / +1 proline
 
-#### Sample result ()
+#### Sample result (results from running script)
 
 # S- 0.879895103973 0.815059171367 0.762053070662 0.649820259651 0.674778273368 0.673587581434
 # T- 0.918203127221 0.791296970748 0.75605359001  0.669760955024 0.697197941959 0.698064516129
